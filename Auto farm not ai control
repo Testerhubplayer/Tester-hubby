@@ -1,0 +1,57 @@
+local Players = game:GetService("Players")
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "TesterHub"
+Gui.IgnoreGuiInset = true
+Gui.Enabled = true
+Gui.DisplayOrder = 10
+Gui.ResetOnSpawn = false  -- Ensures compatibility with mobile and PC
+Gui.Parent = game.Players.LocalPlayer:FindFirstChild("PlayerGui") or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local TeleportDelay = 0.5
+local PlayerIndex = 1
+local TrackingEnabled = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 200, 0, 100)
+MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+MainFrame.BackgroundTransparency = 0.8  -- Set background transparency to 80%
+MainFrame.Position = UDim2.new(0.5, -100, 0.9, -50)  -- Positioned at the bottom center of the screen
+MainFrame.Parent = Gui
+
+local OnButton = Instance.new("TextButton")
+OnButton.Size = UDim2.new(0, 80, 0, 30)
+OnButton.Position = UDim2.new(0.25, -40, 0.7, -15)
+OnButton.Text = "Turn On"
+OnButton.Parent = MainFrame
+OnButton.BackgroundTransparency = 0.8  -- Set button transparency to 80%
+OnButton.MouseButton1Click:Connect(function()
+    TrackingEnabled = true
+end)
+
+local OffButton = Instance.new("TextButton")
+OffButton.Size = UDim2.new(0, 80, 0, 30)
+OffButton.Position = UDim2.new(0.75, -40, 0.7, -15)
+OffButton.Text = "Turn Off"
+OffButton.Parent = MainFrame
+OffButton.BackgroundTransparency = 0.8  -- Set button transparency to 80%
+OffButton.MouseButton1Click:Connect(function()
+    TrackingEnabled = false
+    OffButton.Text = "Turn Off (Clicked)"
+end)
+
+function TeleportToPlayer(player)
+    if player then
+        game.Players.LocalPlayer.Character:MoveTo(player.Character.HumanoidRootPart.Position)
+    end
+end
+
+while true do
+    if TrackingEnabled then
+        local PlayerToTeleport = Players:GetPlayers()[PlayerIndex]
+        TeleportToPlayer(PlayerToTeleport)
+        
+        PlayerIndex = PlayerIndex % #Players:GetPlayers() + 1
+    end
+    
+    wait(TeleportDelay)
+end
